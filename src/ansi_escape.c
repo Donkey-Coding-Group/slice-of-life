@@ -145,6 +145,3 @@ void ansiescape_graphics(char* buffer, const char* sequence, ...) {
     free(array);
 }
 
-
-
-
