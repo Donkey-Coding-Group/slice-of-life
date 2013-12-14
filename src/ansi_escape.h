@@ -63,7 +63,7 @@
 
 /* Returns the cursor to the position stored by the Save Cursor
  * Position sequence. See :macro:`ANSIESCAPE_CURSOR_SAVE`. */
-#define ANSIESCAPE_CURSOR_RESTORE               "\00[u"
+#define ANSIESCAPE_CURSOR_RESTORE               "\033[u"
 
 /* Clears the screen and moves the cursor to the home position
  * (line 0, column 0). */
@@ -99,6 +99,29 @@
  * is a lowercase L). */
 #define ANSIESCAPE_MODE_RESET                   "\033[=#l"
 
+/* Resets the applied graphics settings. */
+#define ANSIESCAPE_GRAPHICS_RESET               "\033[m"
+
+/* Dislay modes for :macro:`ANSIESCAPE_MODE_SET` and
+ * :macro:`ANSIESCAPE_MODE_RESET`. */
+enum ANSIMODE {
+    ANSIMODE_40_25_MONO = 0,
+    ANSIMODE_20_25_COLOR = 1,
+    ANSIMODE_80_25_MONO = 2,
+    ANSIMODE_80_25_COLOR = 3,
+    ANSIMODE_320_200_4COLOR = 4,
+    ANSIMODE_230_200_MONO = 5,
+    ANSIMODE_640_200_MONO = 6,
+    ANSIMODE_LINEWRAPPING = 7,
+    ANSIMODE_320_200_COLOR = 13,
+    ANSIMODE_640_200_COLOR = 14,
+    ANSIMODE_640_350_MONO = 15,
+    ANSIMODE_640_350_COLOR = 16,
+    ANSIMODE_640_480_MONO = 17,
+    ANSIMODE_640_480_COLOR = 18,
+    ANSIMODE_320_200_256COLOR = 19,
+};
+
 /* Attributes for the ANSI Graphics Mode. */
 enum ANSIATTR {
     ANSIATTR_NONE = 0,
@@ -120,26 +143,6 @@ enum ANSICOLOR {
     ANSICOLOR_MAGENTA = 5,
     ANSICOLOR_CYAN = 6,
     ANSICOLOR_WHITE = 7,
-};
-
-/* Dislay modes for :macro:`ANSIESCAPE_MODE_SET` and
- * :macro:`ANSIESCAPE_MODE_RESET`. */
-enum ANSIMODE {
-    ANSIMODE_40_25_MONO = 0,
-    ANSIMODE_20_25_COLOR = 1,
-    ANSIMODE_80_25_MONO = 2,
-    ANSIMODE_80_25_COLOR = 3,
-    ANSIMODE_320_200_4COLOR = 4,
-    ANSIMODE_230_200_MONO = 5,
-    ANSIMODE_640_200_MONO = 6,
-    ANSIMODE_LINEWRAPPING = 7,
-    ANSIMODE_320_200_COLOR = 13,
-    ANSIMODE_640_200_COLOR = 14,
-    ANSIMODE_640_350_MONO = 15,
-    ANSIMODE_640_350_COLOR = 16,
-    ANSIMODE_640_480_MONO = 17,
-    ANSIMODE_640_480_COLOR = 18,
-    ANSIMODE_320_200_256COLOR = 19,
 };
 
 /* Parse and substitute an ANSI Escape Sequence Macro. # (hash) signs are
