@@ -170,9 +170,7 @@ void game_of_life_draw_block(
 
 void game_of_life_draw_pattern(
         const game_of_life_t* game, const char* pattern, int32_t x, int32_t y,
-        int32_t w, int32_t h, char rotation, bool reset) {
-    rotation = _casemod(rotation, 4);
-
+        int32_t w, int32_t h, GOL_ROT rotation, GOL_FLIP flip, bool reset) {
     int i, j;
     for (i=0; i < w; i++) {
         for (j=0; j < h; j++) {
@@ -180,22 +178,27 @@ void game_of_life_draw_pattern(
             int pj = j;
             int gi = i;
             int gj = j;
+
             switch (rotation) {
-                case 3:
-                    gi = j;
-                    gj = w - 1 - i;
+                case GOL_ROT_270:
+                    gi = pj;
+                    gj = w - 1 - pi;
                     break;
-                case 2:
-                    pi = w - 1 - i;
+                case GOL_ROT_180:
+                    pi = w - 1 - pi;
+                    pj = h - 1 - pj;
                     break;
-                case 1:
-                    gi = j;
-                    gj = i;
+                case GOL_ROT_90:
+                    gi = h - 1 - pj;
+                    gj = pi;
                     break;
-                case 0:
+                case GOL_ROT_0:
                 default:
                     break;
             }
+
+            if (flip & GOL_FLIP_H) pi = w - 1 - pi;
+            if (flip & GOL_FLIP_V) pj = h - 1 - pj;
 
             char c = pattern[pi + pj * w];
             bool living = (c == 'x' || c == 'X');
@@ -222,7 +225,8 @@ void game_of_life_draw_glider(
 }
 
 void game_of_life_draw_lwss(
-        const game_of_life_t* game, int32_t x, int32_t y, char rotation) {
+        const game_of_life_t* game, int32_t x, int32_t y, GOL_ROT rotation,
+        GOL_FLIP flip) {
     static const int w = 5;
     static const int h = 4;
     static const char pattern[] =
@@ -231,6 +235,6 @@ void game_of_life_draw_lwss(
             "    X"
             "X  X";
 
-    game_of_life_draw_pattern(game, pattern, x, y, w, h, rotation, true);
+    game_of_life_draw_pattern(game, pattern, x, y, w, h, rotation, flip, true);
 }
 

@@ -86,6 +86,21 @@ int game_of_life_neighbour_count(
 /* Bring the Game of Life into its next generation. */
 void game_of_life_next_generation(game_of_life_t* game);
 
+/* Flags that specify whether something is mirrored or not. */
+typedef enum GOL_FLIP {
+    GOL_FLIP_0 = 0,
+    GOL_FLIP_H = (1 << 0),
+    GOL_FLIP_V = (1 << 1),
+} GOL_FLIP;
+
+/* Flags that specify the clockwise rotation of a pattern. */
+typedef enum GOL_ROT {
+    GOL_ROT_0 = 0,
+    GOL_ROT_90 = 1,
+    GOL_ROT_180 = 2,
+    GOL_ROT_270 = 3,
+} GOL_ROT;
+
 /* Draws a block with the specified dimension and state into the
  * game's grid. */
 void game_of_life_draw_block(
@@ -99,7 +114,7 @@ void game_of_life_draw_block(
  * drawn is reset to dead cells. */
 void game_of_life_draw_pattern(
         const game_of_life_t* game, const char* pattern, int32_t x, int32_t y,
-        int32_t w, int32_t h, char rotation, bool reset);
+        int32_t w, int32_t h, GOL_ROT rotation, GOL_FLIP flip, bool reset);
 
 /* Draws Glider at the specified position (top-left corner) into the game's
  * grid. A Glider has a dimension of 4 columns and 3 rows. The default
@@ -129,6 +144,7 @@ void game_of_life_draw_glider(
  *    X  X
  */
 void game_of_life_draw_lwss(
-        const game_of_life_t* game, int32_t x, int32_t y, char rotation);
+        const game_of_life_t* game, int32_t x, int32_t y, GOL_ROT rotation,
+        GOL_FLIP flip);
 
 #endif /* NIKLASROSENSTEIN_GAME_OF_LIFE */
