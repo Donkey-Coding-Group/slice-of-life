@@ -125,12 +125,15 @@ int main() {
     gol_printer_t printer;
     printer.color_alive = ANSICOLOR_GREEN;
     printer.color_dead = ANSICOLOR_BLACK;
-    printer.max_width = -1;
-    printer.max_height = -1;
 
     int i;
-    /* Let's say we want to play 100 generations. */
-    for (i=0; i < 100; i++) {
+    bool running = true;
+    while (running) {
+        ansiescape_winsize(&height, &width);
+        if (height > 2) height -= 2;
+
+        printer.max_width = width;
+
         ansiescape_setcursor(0, 0);
         gol_printer_print(&printer, game);
         printf("Generation: %llu\n", game->generation);

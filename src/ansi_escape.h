@@ -31,6 +31,8 @@
 #ifndef NIKLASROSENSTEIN_ANSI_ESCAPE
 #define NIKLASROSENSTEIN_ANSI_ESCAPE
 
+#include <stdbool.h>
+
 /* Moves the cursor to the specified position (coordinates). Requires two
  * parameters (line and column). */
 #define ANSIESCAPE_CURSOR_POSITION              "\033[#;#H"
@@ -164,5 +166,14 @@ void ansiescape_setgraphics(const char* sequence, ...);
 
 /* Set the cursor position to the specified column and row. */
 void ansiescape_setcursor(int line, int column);
+
+/* Returns the size of the Terminal Window (in columns and lines). True on
+ * success, false on failure. */
+bool ansiescape_winsize(int* width, int* height);
+
+/* Clears the Terminal window, but different from :macro:`ANSIESCAPE_ERASE`.
+ * Instead of just skipping the characters that remain, the current view
+ * is overwritten. */
+void ansiescape_clear();
 
 #endif /* NIKLASROSENSTEIN_ANSI_ESCAPE */

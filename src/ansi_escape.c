@@ -22,10 +22,16 @@
  * description: ANSI Escape Sequence library
  * author: Niklas Rosenstein <rosensteinniklas@gmail.com> */
 
+/* Unix system library */
+#include <sys/ioctl.h>
+#include <unistd.h>
+
+/* C standard library */
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "ansi_escape.h"
 
 static int* _get_fill_values(const char* sequence, va_list* args) {
@@ -184,5 +190,32 @@ void ansiescape_setcursor(int line, int column) {
     ansiescape_vfill(buffer, ANSIESCAPE_CURSOR_POSITION, cursor);
     printf("%s", buffer);
 }
+
+bool ansiescape_winsize(int* rows, int* columns) {
+    struct winsize w;
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) { /* no error */
+        if (rows)    *rows = w.ws_row;
+        if (columns) *columns = w.ws_col;
+        return true;
+    }
+    return false;
+}
+
+void ansiescape_clear() {
+    int i, j;
+    int rows, columns;
+    if (!ansiescape_winsize(&rows, &columns)) return;
+
+    ansiescape_setgraphics("");
+    ansiescape_setcursor(0, 0);
+    for (i=0; i < rows; i++) {
+        for (j=0; j < columns; j++) {
+            printf(" ");
+        }
+        printf("\n\r");
+    }
+    ansiescape_setcursor(0, 0);
+}
+
 
 
