@@ -71,14 +71,31 @@ typedef enum PPM_MODE {
     PPM_MODE_PLAIN,
 } PPM_MODE;
 
+/* This class contains data that is required throughout the process
+ * of writing a PPM file. PPM files are written pixelline by pixelline. */
+typedef struct _ppm_writesession {
+    const ppm_outstream_t* stream;
+    PPM_MODE mode;
+    uint16_t width;
+    uint16_t height;
+    uint16_t maxvalue;
+
+    uint16_t pixelcount;
+    uint16_t line;
+    uint16_t column;
+} ppm_writesession_t;
+
+/* Initialize a :class:`ppm_write_session_t` object. Returns a non-zero
+ * value on failure. The width, height and maxvalue must not be zero. */
+int ppm_writesession_init(
+        ppm_writesession_t* session, const ppm_outstream_t* stream,
+        PPM_MODE mode, uint16_t width, uint16_t height, uint16_t maxvalue);
+
 /* Writes the header of a PPM file. */
-size_t ppm_write_header(
-        const ppm_outstream_t* outstream, PPM_MODE mode, uint16_t width,
-        uint16_t height, uint16_t maxvalue);
+size_t ppm_write_header(ppm_writesession_t* session);
 
 /* Writes a pixel in the specified PPM mode to the outstream. */
 size_t ppm_write_pixel(
-        const ppm_outstream_t* outstream, PPM_MODE mode, uint16_t maxvalue,
-        uint16_t r, uint16_t g, uint16_t b);
+        ppm_writesession_t* session, uint16_t r, uint16_t g, uint16_t b);
 
 #endif /* NIKLASROSENSTEIN_PPM */

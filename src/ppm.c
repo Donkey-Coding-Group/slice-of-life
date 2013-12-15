@@ -53,16 +53,34 @@ size_t ppm_writemethod_file(void* fp_, const char* buffer, size_t size) {
     return fwrite(buffer, 1, size, fp);
 }
 
-size_t ppm_write_header(
-        const ppm_outstream_t* outstream, PPM_MODE mode, uint16_t width,
-        uint16_t height, uint16_t maxvalue) {
+int ppm_writesession_init(
+        ppm_writesession_t* session, const ppm_outstream_t* stream,
+        PPM_MODE mode, uint16_t width, uint16_t height, uint16_t maxvalue) {
+    if (!session || !stream) return 1;
+    if (width <= 0 || height <= 0 || maxvalue <= 0) return 2;
+
+    session->stream = stream;
+    session->mode = mode;
+    session->width = width;
+    session->height = height;
+    session->maxvalue = maxvalue;
+
+    session->pixelcount = 0;
+    session->line = 0;
+    session->column = 0;
+
+    return 0;
+}
+
+size_t ppm_write_header(ppm_writesession_t* session) {
+    /* printf() format string for the header. */
     static const char* whm_format = "%"PRIu16" %"PRIu16"\n%"PRIu16"\n";
 
     char buffer[100];
     char* b = buffer;
 
     /* Blit the magic number into the buffer. */
-    switch (mode) {
+    switch (session->mode) {
         case PPM_MODE_PLAIN:
             b += sprintf(buffer, "P3\n");
             break;
@@ -75,26 +93,39 @@ size_t ppm_write_header(
     }
 
     /* Blit the width, height and maxvalue into the buffer. */
-    b += sprintf(b, whm_format, width, height, maxvalue);
+    b += sprintf(b, whm_format, session->width, session->height,
+                 session->maxvalue);
 
     /* Write the buffer to the output stream. */
-    return ppm_outstream_write(outstream, buffer, (int) (b - buffer));
+    return ppm_outstream_write(session->stream, buffer, (int) (b - buffer));
 }
 
 size_t ppm_write_pixel(
-        const ppm_outstream_t* outstream, PPM_MODE mode, uint16_t maxvalue,
-        uint16_t r, uint16_t g, uint16_t b) {
-    static const char* rgb_format = "%"PRIu16" %"PRIu16" %"PRIu16" ";
+        ppm_writesession_t* session, uint16_t r, uint16_t g, uint16_t b) {
+    /* printf() format string for the r, g, b values used in plain mode. */
+    static const char* rgb_format = "%"PRIu16" %"PRIu16" %"PRIu16" %c";
 
+    char c = ' ';
     int size = 0;
     char buffer[50];
-    switch (mode) {
+
+    if (session->column >= session->width) {
+        c = '\n';
+        session->line++;
+        session->column = 0;
+    }
+    else {
+        session->column++;
+    }
+    session->pixelcount++;
+
+    /* Pack the r, g, b values into the buffer depending on the PPM mode. */
+    switch (session->mode) {
         case PPM_MODE_PLAIN:
-            size = snprintf(buffer, sizeof(buffer), rgb_format, r, g, b);
-            ppm_outstream_write(outstream, buffer, size);
+            size = snprintf(buffer, sizeof(buffer), rgb_format, r, g, b, c);
             break;
         case PPM_MODE_BINARY:
-            if (maxvalue < 256) size = 1;
+            if (session->maxvalue < 256) size = 1;
             else size = 2;
 
             {
@@ -110,9 +141,10 @@ size_t ppm_write_pixel(
             }
 
             size = size * 3;
-            ppm_outstream_write(outstream, buffer, size);
             break;
     }
+
+    ppm_outstream_write(session->stream, buffer, size);
     return size;
 }
 
