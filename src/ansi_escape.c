@@ -163,3 +163,26 @@ void ansiescape_graphics(char* buffer, const char* sequence, ...) {
     free(array);
 }
 
+
+void ansiescape_setgraphics(const char* sequence, ...) {
+    va_list args;
+    va_start(args, sequence);
+    int* array = _get_graphics_values(sequence, &args);
+    va_end(args);
+    if (array == NULL) return;
+
+    char buffer[50];
+    ansiescape_vgraphics(buffer, sequence, array);
+    free(array);
+
+    printf("%s", buffer);
+}
+
+void ansiescape_setcursor(int line, int column) {
+    int cursor[2] = {line, column};
+    char buffer[20];
+    ansiescape_vfill(buffer, ANSIESCAPE_CURSOR_POSITION, cursor);
+    printf("%s", buffer);
+}
+
+

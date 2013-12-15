@@ -103,7 +103,7 @@
 
 /* Dislay modes for :macro:`ANSIESCAPE_MODE_SET` and
  * :macro:`ANSIESCAPE_MODE_RESET`. */
-enum ANSIMODE {
+typedef enum ANSIMODE {
     ANSIMODE_40_25_MONO = 0,
     ANSIMODE_20_25_COLOR = 1,
     ANSIMODE_80_25_MONO = 2,
@@ -119,20 +119,20 @@ enum ANSIMODE {
     ANSIMODE_640_480_MONO = 17,
     ANSIMODE_640_480_COLOR = 18,
     ANSIMODE_320_200_256COLOR = 19,
-};
+} ANSIMODE;
 
 /* Attributes for the ANSI Graphics Mode. */
-enum ANSIATTR {
+typedef enum ANSIATTR {
     ANSIATTR_NONE = 0,
     ANSIATTR_BOLD = 1,
     ANSIATTR_UNDERLINE = 4,
     ANSIATTR_BLINK = 5,
     ANSIATTR_REVERSEVIDEO = 6,
     ANSIATTR_CONCEALED = 7,
-};
+} ANSIATTR;
 
 /* Colors for the ANSI Graphics Mode. */
-enum ANSICOLOR {
+typedef enum ANSICOLOR {
     ANSICOLOR_NONE = -1,
     ANSICOLOR_BLACK = 0,
     ANSICOLOR_RED = 1,
@@ -142,7 +142,7 @@ enum ANSICOLOR {
     ANSICOLOR_MAGENTA = 5,
     ANSICOLOR_CYAN = 6,
     ANSICOLOR_WHITE = 7,
-};
+} ANSICOLOR;
 
 /* Parse and substitute an ANSI Escape Sequence Macro. # (hash) signs are
  * replaced by the passed values and filled into the buffer. */
@@ -158,5 +158,11 @@ void ansiescape_vfill(char* buffer, const char* sequence, const int* values);
  * specified variable arguments must match the *sequence* string. */
 void ansiescape_graphics(char* buffer, const char* sequence, ...);
 void ansiescape_vgraphics(char* buffer, const char* sequence, const int* values);
+
+/* Print the specified graphics to stdout. */
+void ansiescape_setgraphics(const char* sequence, ...);
+
+/* Set the cursor position to the specified column and row. */
+void ansiescape_setcursor(int line, int column);
 
 #endif /* NIKLASROSENSTEIN_ANSI_ESCAPE */
