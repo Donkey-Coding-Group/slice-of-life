@@ -113,13 +113,13 @@ int main() {
     height-=2;
 
     /* Create a new Game of Life. */
-    game_of_life_t* game = game_of_life_create(width, height, 0);
+    game_of_life_t* game = game_of_life_create(width, height, true);
     if (!game) {
         fprintf(stderr, "Game of Life could not be allocated.\n");
         return -1;
     }
 
-    game_of_life_draw_glider(game, 10, 10);
+    game_of_life_draw_glider(game, 10, 10, false, true);
 
     /* Create a printer. */
     gol_printer_t printer;
@@ -127,7 +127,6 @@ int main() {
     printer.color_dead = ANSICOLOR_BLACK;
     printer.max_width = -1;
     printer.max_height = -1;
-
 
     int i;
     /* Let's say we want to play 100 generations. */

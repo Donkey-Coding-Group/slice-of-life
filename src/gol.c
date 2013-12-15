@@ -170,14 +170,18 @@ void game_of_life_draw_block(
 }
 
 void game_of_life_draw_glider(
-        const game_of_life_t* game, int32_t x, int32_t y) {
-    game_of_life_draw_block(game, x, y, 4, 3, 1);
+            const game_of_life_t* game, int32_t x, int32_t y,
+            bool flip_h, bool flip_v) {
+    game_of_life_draw_block(game, x, y, 4, 3, true);
+
+    int h = (flip_h ? -1 : 1);
+    int v = (flip_v ? -1 : 1);
 
     /* Draw the Glider pattern. */
-    game_of_life_cell_set(game, x + 1, y    , 1);
-    game_of_life_cell_set(game, x + 2, y + 1, 1);
-    game_of_life_cell_set(game, x + 2, y + 2, 1);
-    game_of_life_cell_set(game, x + 1, y + 2, 1);
-    game_of_life_cell_set(game, x    , y + 2, 1);
+    game_of_life_cell_set(game, x + 1 * h, y        , 1);
+    game_of_life_cell_set(game, x + 2 * h, y + 1 * v, 1);
+    game_of_life_cell_set(game, x + 2 * h, y + 2 * v, 1);
+    game_of_life_cell_set(game, x + 1 * h, y + 2 * v, 1);
+    game_of_life_cell_set(game, x        , y + 2 * v, 1);
 }
 

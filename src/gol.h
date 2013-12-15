@@ -93,7 +93,11 @@ void game_of_life_draw_block(
         bool state);
 
 /* Drasa Glider at the specified position (top-left corner) into the game's
- * grid. A Glider has a dimension of 4 columns and 3 rows. */
-void game_of_life_draw_glider(const game_of_life_t* game, int32_t x, int32_t y);
+ * grid. A Glider has a dimension of 4 columns and 3 rows. The default
+ * orientation is to the bottom left. Use the *flip_h* and *flip_v* parameters
+ * to change its heading. */
+void game_of_life_draw_glider(
+            const game_of_life_t* game, int32_t x, int32_t y,
+            bool flip_h, bool flip_v);
 
 #endif /* NIKLASROSENSTEIN_GAME_OF_LIFE */
