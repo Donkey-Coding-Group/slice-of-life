@@ -92,6 +92,15 @@ void game_of_life_draw_block(
         const game_of_life_t* game, int32_t x, int32_t y, int32_t w, int32_t h,
         bool state);
 
+/* Draws a pattern at the specified position and rotation. *pattern* must be
+ * a 1D representation of the 2D pattern where living cells are marked by
+ * a lower or uppercase X. The *rotation* argument specifies the number of
+ * clockwise rotations. If *reset* is True, the area in which the pattern is
+ * drawn is reset to dead cells. */
+void game_of_life_draw_pattern(
+        const game_of_life_t* game, const char* pattern, int32_t x, int32_t y,
+        int32_t w, int32_t h, char rotation, bool reset);
+
 /* Draws Glider at the specified position (top-left corner) into the game's
  * grid. A Glider has a dimension of 4 columns and 3 rows. The default
  * orientation is to the bottom left. Use the *flip_h* and *flip_v* parameters
@@ -108,10 +117,9 @@ void game_of_life_draw_glider(
             bool flip_h, bool flip_v);
 
 /* Draws a Lightweis Spaceship (LWSS) at the specified position (top-left
- * corner). A LWSS has a dimension of 5 columsna and 4 rows. The direction
- * parameter can be either 'l' for left, 'r' for right, 'u' and 't' for upwards
- * and 'd' and 'b' for downwards. If an unrecognized value is passed, right
- * heading is used.
+ * corner). A LWSS has a dimension of 5 columns and 4 rows. By default,
+ * the spaceship heads to the right. Via the *rotation* argument, the number
+ * of clockwise rotations can be specified.
  *
  * Inital pattern:
  *
@@ -121,6 +129,6 @@ void game_of_life_draw_glider(
  *    X  X
  */
 void game_of_life_draw_lwss(
-        const game_of_life_t* game, int32_t x, int32_t y, char direction);
+        const game_of_life_t* game, int32_t x, int32_t y, char rotation);
 
 #endif /* NIKLASROSENSTEIN_GAME_OF_LIFE */
