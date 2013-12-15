@@ -205,6 +205,7 @@ void ansiescape_clear() {
     int i, j;
     int rows, columns;
     if (!ansiescape_winsize(&rows, &columns)) return;
+    if (rows > 1) rows-=1; /* TOOD: Is this on every Terminal ok? */
 
     ansiescape_setgraphics("");
     ansiescape_setcursor(0, 0);
