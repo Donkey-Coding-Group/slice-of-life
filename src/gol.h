@@ -76,7 +76,8 @@ cell_t* game_of_life_cell(const game_of_life_t* game, int32_t x, int32_t y);
 
 /* Set the state of a Cell. Nothing happens if the specified cell does not
  * exist in the grid. */
-void game_of_life_cell_set(const game_of_life_t* game, int32_t x, int32_t y, bool state);
+void game_of_life_cell_set(
+        const game_of_life_t* game, int32_t x, int32_t y, bool state);
 
 /* Returns the number of living Cells around the specified cell. */
 int game_of_life_neighbour_count(
@@ -84,5 +85,15 @@ int game_of_life_neighbour_count(
 
 /* Bring the Game of Life into its next generation. */
 void game_of_life_next_generation(game_of_life_t* game);
+
+/* Draws a block with the specified dimension and state into the
+ * game's grid. */
+void game_of_life_draw_block(
+        const game_of_life_t* game, int32_t x, int32_t y, int32_t w, int32_t h,
+        bool state);
+
+/* Drasa Glider at the specified position (top-left corner) into the game's
+ * grid. A Glider has a dimension of 4 columns and 3 rows. */
+void game_of_life_draw_glider(const game_of_life_t* game, int32_t x, int32_t y);
 
 #endif /* NIKLASROSENSTEIN_GAME_OF_LIFE */

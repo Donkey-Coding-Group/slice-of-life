@@ -77,6 +77,14 @@ cell_t* game_of_life_cell(const game_of_life_t* game, int32_t x, int32_t y) {
     return &game->cells[x + y * game->width];
 }
 
+void game_of_life_cell_set(
+        const game_of_life_t* game, int32_t x, int32_t y, bool state) {
+    cell_t* cell = game_of_life_cell(game, x, y);
+    if (cell) {
+        cell->state = state;
+    }
+}
+
 /* This utility function returns true if the cell at the specified cell
  * exists (ie. the index is not out of the grid's bounds) and is alive,
  * false in any other case. */
@@ -101,7 +109,6 @@ int game_of_life_neighbour_count(
     return count;
 }
 
-/* Bring the Game of Life into its next generation. */
 void game_of_life_next_generation(game_of_life_t* game) {
     game->generation++;
     int i, j;
@@ -139,9 +146,27 @@ void game_of_life_next_generation(game_of_life_t* game) {
     }
 }
 
-void game_of_life_cell_set(const game_of_life_t* game, int32_t x, int32_t y, bool state) {
-    cell_t* cell = game_of_life_cell(game, x, y);
-    if (cell) {
-        cell->state = state;
+void game_of_life_draw_block(
+        const game_of_life_t* game, int32_t x, int32_t y, int32_t w, int32_t h,
+        bool state) {
+    int i, j;
+    for (i=x; i < w; i++) {
+        for (j=y; j < h; j++) {
+            cell_t* cell = game_of_life_cell(game, i, j);
+            if (cell) cell->state = state;
+        }
     }
 }
+
+void game_of_life_draw_glider(
+        const game_of_life_t* game, int32_t x, int32_t y) {
+    game_of_life_draw_block(game, x, y, 4, 3, 1);
+
+    /* Draw the Glider pattern. */
+    game_of_life_cell_set(game, x + 1, y    , 1);
+    game_of_life_cell_set(game, x + 2, y + 1, 1);
+    game_of_life_cell_set(game, x + 2, y + 2, 1);
+    game_of_life_cell_set(game, x + 1, y + 2, 1);
+    game_of_life_cell_set(game, x    , y + 2, 1);
+}
+
