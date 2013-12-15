@@ -57,6 +57,21 @@ typedef struct _game_of_life {
     /* This field defines whether the boundaries of the field are directly
      * adjacent to their opposite edges and corners. */
     bool adjacency;
+
+    /* The minimum and maximum number of neighbouring cells that keep
+     * a cell alive. The default value is (2, 3). */
+    struct {
+        int min;
+        int max;
+    } keep_cell;
+
+    /* The minimum and maximum number of neighbouring cells that make a
+     * living cell to a dead cell. The default value is (3, 3). */
+    struct {
+        int min;
+        int max;
+    } make_cell;
+
 } game_of_life_t;
 
 /* Create a new Game of Life from the specified parameters. Returns NULL

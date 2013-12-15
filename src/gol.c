@@ -65,6 +65,10 @@ game_of_life_t* game_of_life_create(
     game->generation = 0;
     game->cells = cells;
     game->adjacency = adjacency;
+    game->keep_cell.min = 2;
+    game->keep_cell.max = 3;
+    game->make_cell.min = 3;
+    game->make_cell.max = 3;
 
     return game;
 }
@@ -124,6 +128,13 @@ void game_of_life_next_generation(game_of_life_t* game) {
     game->generation++;
     int i, j;
 
+    /* Extract the rules into the local scope, for easier access and
+     * sped up computation. */
+    int keep_min = game->keep_cell.min;
+    int keep_max = game->keep_cell.max;
+    int make_min = game->make_cell.min;
+    int make_max = game->make_cell.max;
+
     /* Iterate over the complete game cell and fill the "prev_state"
      * attribute of each cell temporarily. This value will be moved
      * to the "current" attribute later on. */
@@ -134,10 +145,12 @@ void game_of_life_next_generation(game_of_life_t* game) {
             int neighbours = game_of_life_neighbour_count(game, i, j);
             bool new_state;
             if (cell->state) {
-                new_state = (neighbours == 2 || neighbours == 3);
+                new_state = (neighbours >= keep_min &&
+                             neighbours <= keep_max);
             }
             else {
-                new_state = (neighbours == 3);
+                new_state = (neighbours >= make_min &&
+                             neighbours <= make_max);
             }
 
             /* Temporarily fill the "prev_state" attribute. */
