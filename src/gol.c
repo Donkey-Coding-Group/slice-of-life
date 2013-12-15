@@ -209,19 +209,16 @@ void game_of_life_draw_pattern(
 }
 
 void game_of_life_draw_glider(
-            const game_of_life_t* game, int32_t x, int32_t y,
-            bool flip_h, bool flip_v) {
-    game_of_life_draw_block(game, x, y, 4, 3, false);
+        const game_of_life_t* game, int32_t x, int32_t y, GOL_ROT rotation,
+        GOL_FLIP flip) {
+    static const int w = 3;
+    static const int h = 3;
+    static const char pattern[] =
+            " X "
+            "  X"
+            "XXX";
 
-    int h = (flip_h ? -1 : 1);
-    int v = (flip_v ? -1 : 1);
-
-    /* Draw the Glider pattern. */
-    game_of_life_cell_set(game, x + 1 * h, y        , 1);
-    game_of_life_cell_set(game, x + 2 * h, y + 1 * v, 1);
-    game_of_life_cell_set(game, x + 2 * h, y + 2 * v, 1);
-    game_of_life_cell_set(game, x + 1 * h, y + 2 * v, 1);
-    game_of_life_cell_set(game, x        , y + 2 * v, 1);
+    game_of_life_draw_pattern(game, pattern, x, y, w, h, rotation, flip, true);
 }
 
 void game_of_life_draw_lwss(

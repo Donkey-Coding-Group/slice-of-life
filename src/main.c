@@ -103,9 +103,8 @@ int main() {
         return -1;
     }
 
-    game_of_life_draw_glider(game, 10, 10, false, true);
-    game_of_life_draw_lwss(game, 30, 10, 0);
-    game_of_life_draw_lwss(game, 45, 10, 2);
+    game_of_life_draw_glider(game, 51, -3, GOL_ROT_0, GOL_FLIP_H);
+    game_of_life_draw_glidergun(game, 0, 0, GOL_ROT_0, GOL_FLIP_0);
 
     /* Create a printer. */
     gol_printer_t printer;
@@ -120,9 +119,10 @@ int main() {
 
         printer.max_width = width;
 
+        ansiescape_clear();
         ansiescape_setcursor(0, 0);
         gol_printer_print(&printer, game);
-        printf("Generation: %llu\n", game->generation);
+        printf("%sGeneration: %llu\n", ANSIESCAPE_ERASE_LINE, game->generation);
         game_of_life_next_generation(game);
         usleep(50 * 1000);
     }

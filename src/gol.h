@@ -117,7 +117,7 @@ void game_of_life_draw_pattern(
         int32_t w, int32_t h, GOL_ROT rotation, GOL_FLIP flip, bool reset);
 
 /* Draws Glider at the specified position (top-left corner) into the game's
- * grid. A Glider has a dimension of 4 columns and 3 rows. The default
+ * grid. A Glider has a dimension of 3 columns and 3 rows. The default
  * orientation is to the bottom left. Use the *flip_h* and *flip_v* parameters
  * to change its heading.
  *
@@ -128,8 +128,8 @@ void game_of_life_draw_pattern(
  *       XXX
  */
 void game_of_life_draw_glider(
-            const game_of_life_t* game, int32_t x, int32_t y,
-            bool flip_h, bool flip_v);
+        const game_of_life_t* game, int32_t x, int32_t y, GOL_ROT rotation,
+        GOL_FLIP flip);
 
 /* Draws a Lightweis Spaceship (LWSS) at the specified position (top-left
  * corner). A LWSS has a dimension of 5 columns and 4 rows. By default,
