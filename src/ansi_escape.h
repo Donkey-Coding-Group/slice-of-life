@@ -147,7 +147,7 @@ enum ANSICOLOR {
 /* Parse and substitute an ANSI Escape Sequence Macro. # (hash) signs are
  * replaced by the passed values and filled into the buffer. */
 void ansiescape_fill(char* buffer, const char* sequence, ...);
-void ansiescape_filla(char* buffer, const char* sequence, const int* values);
+void ansiescape_vfill(char* buffer, const char* sequence, const int* values);
 
 /* The ANSI Escape Sequence for specifying the Graphics Mode accepts a
  * variable number of arguments and is therefore treated specialized with
@@ -157,6 +157,6 @@ void ansiescape_filla(char* buffer, const char* sequence, const int* values);
  * contained in the sequence. Invalid characters are simply ignored. The
  * specified variable arguments must match the *sequence* string. */
 void ansiescape_graphics(char* buffer, const char* sequence, ...);
-void ansiescape_graphicsa(char* buffer, const char* sequence, const int* values);
+void ansiescape_vgraphics(char* buffer, const char* sequence, const int* values);
 
 #endif /* NIKLASROSENSTEIN_ANSI_ESCAPE */

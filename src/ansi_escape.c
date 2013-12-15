@@ -28,7 +28,51 @@
 #include <string.h>
 #include "ansi_escape.h"
 
-void ansiescape_filla(char* buffer, const char* sequence, const int* values) {
+static int* _get_fill_values(const char* sequence, va_list* args) {
+    /* Count the number of variable arguments. */
+    int count = 0;
+    const char* c = sequence;
+    while (*c != 0) {
+        if (*c++ == '#') count++;
+    }
+
+    /* Fill an array of the arguments. */
+    int* array = malloc(sizeof(int) * count);
+    if (array == NULL) return NULL;
+    int i;
+    for (i=0; i < count; i++) {
+        array[i] = va_arg(*args, int);
+    }
+
+    return array;
+}
+
+static int* _get_graphics_values(const char* sequence, va_list* args) {
+    /* Count the number of variable arguments. */
+    int count = 0;
+    const char* c = sequence;
+    while (*c != 0) {
+        switch (*c++) {
+            case 'f':
+            case 'b':
+            case 'a':
+                count++;
+        }
+    }
+
+    /* Fill an array of the arguments. */
+    int* array = malloc(sizeof(int) * count);
+    if (array == NULL) return NULL;
+    int i;
+    for (i=0; i < count; i++) {
+        array[i] = va_arg(*args, int);
+    }
+
+    return array;
+}
+
+
+void ansiescape_vfill(char* buffer, const char* sequence, const int* values) {
     char* b = buffer;
     const char* c = sequence;
     while (*c != 0) {
@@ -53,30 +97,21 @@ void ansiescape_filla(char* buffer, const char* sequence, const int* values) {
 void ansiescape_fill(char* buffer, const char* sequence, ...) {
     *buffer = 0;
 
-    /* Count the number of variable arguments. */
-    int count = 0;
-    const char* c = sequence;
-    while (*c != 0) {
-        if (*c++ == '#') count++;
-    }
-
+    /* Convert the variable arguments into an array of integer values. */
     va_list args;
     va_start(args, sequence);
-
-    /* Fill an array of the arguments. */
-    int* array = malloc(sizeof(int) * count);
-    if (!array) return;
-    int i;
-    for (i=0; i < count; i++) {
-        array[i] = va_arg(args, int);
-    }
+    int* array = _get_fill_values(sequence, &args);
+    va_end(args);
+    if (array == NULL) return;
 
     /* Call the array-based function.*/
-    ansiescape_filla(buffer, sequence, array);
+    ansiescape_vfill(buffer, sequence, array);
     free(array);
 }
 
-void ansiescape_graphicsa(char* buffer, const char* sequence, const int* values) {
+
+
+void ansiescape_vgraphics(char* buffer, const char* sequence, const int* values) {
     /* Copy the first parts of the ANSI Escape Code. */
     char* b = buffer;
     memcpy(b, "\033[", 2);
@@ -116,31 +151,15 @@ void ansiescape_graphicsa(char* buffer, const char* sequence, const int* values)
 void ansiescape_graphics(char* buffer, const char* sequence, ...) {
     *buffer = 0;
 
-    /* Count the number of variable arguments. */
-    int count = 0;
-    const char* c = sequence;
-    while (*c != 0) {
-        switch (*c++) {
-            case 'f':
-            case 'b':
-            case 'a':
-                count++;
-        }
-    }
-
+    /* Convert the variable arguments into an array of integer values. */
     va_list args;
     va_start(args, sequence);
-
-    /* Fill an array of the arguments. */
-    int* array = malloc(sizeof(int) * count);
-    if (!array) return;
-    int i;
-    for (i=0; i < count; i++) {
-        array[i] = va_arg(args, int);
-    }
+    int* array = _get_graphics_values(sequence, &args);
+    va_end(args);
+    if (array == NULL) return;
 
     /* Call the array-based function.*/
-    ansiescape_graphicsa(buffer, sequence, array);
+    ansiescape_vgraphics(buffer, sequence, array);
     free(array);
 }
 
