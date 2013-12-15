@@ -104,7 +104,8 @@ int main() {
     }
 
     game_of_life_draw_glider(game, 10, 10, false, true);
-    game_of_life_draw_lwss(game, 30, 10, 'r');
+    game_of_life_draw_lwss(game, 30, 10, 0);
+    game_of_life_draw_lwss(game, 45, 10, 2);
 
     /* Create a printer. */
     gol_printer_t printer;
