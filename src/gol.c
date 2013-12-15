@@ -161,10 +161,9 @@ void game_of_life_draw_block(
         const game_of_life_t* game, int32_t x, int32_t y, int32_t w, int32_t h,
         bool state) {
     int i, j;
-    for (i=x; i < w; i++) {
-        for (j=y; j < h; j++) {
-            cell_t* cell = game_of_life_cell(game, i, j);
-            if (cell) cell->state = state;
+    for (i=0; i < w; i++) {
+        for (j=0; j < h; j++) {
+            game_of_life_cell_set(game, x + i, y + j, state);
         }
     }
 }
@@ -172,7 +171,7 @@ void game_of_life_draw_block(
 void game_of_life_draw_glider(
             const game_of_life_t* game, int32_t x, int32_t y,
             bool flip_h, bool flip_v) {
-    game_of_life_draw_block(game, x, y, 4, 3, true);
+    game_of_life_draw_block(game, x, y, 4, 3, false);
 
     int h = (flip_h ? -1 : 1);
     int v = (flip_v ? -1 : 1);
