@@ -27,6 +27,17 @@
 #include <string.h>
 #include "gol.h"
 
+
+/* This utility function implements a cyclic modular calculation. This means,
+ * for instance, that if a value of -1 is passed for *x*, the result will
+ * be ``v - 1``. */
+static int _casemod(int x, int v) {
+    int r = abs(x % v);
+    if (x < 0) r = v - r;
+    return r;
+}
+
+
 game_of_life_t* game_of_life_create(
         uint32_t width, uint32_t height, bool adjacency) {
     /* Validate the parameters. */
@@ -68,8 +79,8 @@ void game_of_life_destroy(game_of_life_t* game) {
 
 cell_t* game_of_life_cell(const game_of_life_t* game, int32_t x, int32_t y) {
     if (game->adjacency) {
-        x = abs(x % game->width);
-        y = abs(y % game->height);
+        x = _casemod(x, game->width);
+        y = _casemod(y, game->height);
     }
     else if (x < 0 || y < 0 || x >= game->width || y >= game->height) {
         return NULL;
