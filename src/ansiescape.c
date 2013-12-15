@@ -32,7 +32,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ansi_escape.h"
+#include "ansiescape.h"
 
 static int* _get_fill_values(const char* sequence, va_list* args) {
     /* Count the number of variable arguments. */

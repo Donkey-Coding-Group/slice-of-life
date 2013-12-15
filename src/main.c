@@ -26,7 +26,7 @@
 #include <stdbool.h>
 
 #include "gol.h"
-#include "ansi_escape.h"
+#include "ansiescape.h"
 
 
 /* Structure that holds information about printing a Game of Life to the
