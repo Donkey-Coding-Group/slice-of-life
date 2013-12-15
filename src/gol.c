@@ -112,10 +112,6 @@ void game_of_life_next_generation(game_of_life_t* game) {
     for (i=0; i < game->width; i++) {
         for (j=0; j < game->height; j++) {
             cell_t* cell = game_of_life_cell(game, i, j);
-            if (cell == NULL) {
-                fprintf(stderr, "Got NULL for cell at %d, %d\n", i, j);
-                continue;
-            }
 
             int neighbours = game_of_life_neighbour_count(game, i, j);
             bool new_state;
@@ -135,10 +131,6 @@ void game_of_life_next_generation(game_of_life_t* game) {
     for (i=0; i < game->width; i++) {
         for (j=0; j < game->height; j++) {
             cell_t* cell = game_of_life_cell(game, i, j);
-            if (cell == NULL) {
-                fprintf(stderr, "Got NULL for cell at %d, %d\n", i, j);
-                continue;
-            }
 
             bool value = cell->prev_state;
             cell->prev_state = cell->state;
@@ -147,3 +139,9 @@ void game_of_life_next_generation(game_of_life_t* game) {
     }
 }
 
+void game_of_life_cell_set(const game_of_life_t* game, int32_t x, int32_t y, bool state) {
+    cell_t* cell = game_of_life_cell(game, x, y);
+    if (cell) {
+        cell->state = state;
+    }
+}

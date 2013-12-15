@@ -74,6 +74,10 @@ void game_of_life_destroy(game_of_life_t* game);
  * of the grid's bounds, NULL is returned. */
 cell_t* game_of_life_cell(const game_of_life_t* game, int32_t x, int32_t y);
 
+/* Set the state of a Cell. Nothing happens if the specified cell does not
+ * exist in the grid. */
+void game_of_life_cell_set(const game_of_life_t* game, int32_t x, int32_t y, bool state);
+
 /* Returns the number of living Cells around the specified cell. */
 int game_of_life_neighbour_count(
         const game_of_life_t* game, int32_t x, int32_t y);
