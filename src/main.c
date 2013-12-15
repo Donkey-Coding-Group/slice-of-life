@@ -119,12 +119,7 @@ int main() {
         return -1;
     }
 
-    /* Create a Glider. */
-    game_of_life_cell_set(game, 10, 10, 1);
-    game_of_life_cell_set(game, 11, 11, 1);
-    game_of_life_cell_set(game, 11, 12, 1);
-    game_of_life_cell_set(game, 10, 12, 1);
-    game_of_life_cell_set(game,  9, 12, 1);
+    game_of_life_draw_glider(game, 10, 10);
 
     /* Create a printer. */
     gol_printer_t printer;
