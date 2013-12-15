@@ -7,11 +7,11 @@ Game of Life in the Terminal (Unix only currently)
 
 ### Compile
 
-> gcc src/*.c -o main.out
+    $ gcc src/*.c -o main.out
 
 ### Run
 
-> ./main.out
+    $ ./main.out
 
 ### Watch
 
