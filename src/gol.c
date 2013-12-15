@@ -238,3 +238,22 @@ void game_of_life_draw_lwss(
     game_of_life_draw_pattern(game, pattern, x, y, w, h, rotation, flip, true);
 }
 
+void game_of_life_draw_glidergun(
+        const game_of_life_t* game, int32_t x, int32_t y, GOL_ROT rotation,
+        GOL_FLIP flip) {
+    static const int w = 36;
+    static const int h = 9;
+    static const char pattern[] =
+            "                        X           "
+            "                      X X           "
+            "            XX      XX            XX"
+            "           X   X    XX            XX"
+            "XX        X     X   XX              "
+            "XX        X   X XX    X X           "
+            "          X     X       X           "
+            "           X   X                    "
+            "            XX                      ";
+
+    game_of_life_draw_pattern(game, pattern, x, y, w, h, rotation, flip, true);
+}
+

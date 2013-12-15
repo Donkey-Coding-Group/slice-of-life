@@ -147,4 +147,12 @@ void game_of_life_draw_lwss(
         const game_of_life_t* game, int32_t x, int32_t y, GOL_ROT rotation,
         GOL_FLIP flip);
 
+/* Draws a Glider Gun at the specified position (top-left corner). By default,
+ * the Glider Gun shoots to the bottom right. You can rotate and flip the
+ * pattern with the respective parameters. The Glider Gun requires 36 columns
+ * and 9 rows of space. */
+void game_of_life_draw_glidergun(
+        const game_of_life_t* game, int32_t x, int32_t y, GOL_ROT rotation,
+        GOL_FLIP flip);
+
 #endif /* NIKLASROSENSTEIN_GAME_OF_LIFE */
