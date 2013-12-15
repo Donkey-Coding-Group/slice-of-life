@@ -26,8 +26,7 @@
  * Sequences. Some of the Escape Sequences require parameters which can be
  * inserted using the :func:`ansiescape_fill(char*, const char*, ...)`
  * function. Parameters in a ANSI Escape Sequence are denored by # (hash)
- * signs.
- */
+ * signs. */
 
 #ifndef NIKLASROSENSTEIN_ANSI_ESCAPE
 #define NIKLASROSENSTEIN_ANSI_ESCAPE

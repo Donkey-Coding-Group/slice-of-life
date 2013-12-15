@@ -20,8 +20,7 @@
  *
  * file: ansi_escape.c
  * description: ANSI Escape Sequence library
- * author: Niklas Rosenstein <rosensteinniklas@gmail.com>
- */
+ * author: Niklas Rosenstein <rosensteinniklas@gmail.com> */
 
 #include <stdio.h>
 #include <stdarg.h>
