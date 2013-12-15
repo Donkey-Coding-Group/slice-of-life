@@ -107,4 +107,20 @@ void game_of_life_draw_glider(
             const game_of_life_t* game, int32_t x, int32_t y,
             bool flip_h, bool flip_v);
 
+/* Draws a Lightweis Spaceship (LWSS) at the specified position (top-left
+ * corner). A LWSS has a dimension of 5 columsna and 4 rows. The direction
+ * parameter can be either 'l' for left, 'r' for right, 'u' and 't' for upwards
+ * and 'd' and 'b' for downwards. If an unrecognized value is passed, right
+ * heading is used.
+ *
+ * Inital pattern:
+ *
+ *     XXXX
+ *    X   X
+ *        X
+ *    X  X
+ */
+void game_of_life_draw_lwss(
+        const game_of_life_t* game, int32_t x, int32_t y, char direction);
+
 #endif /* NIKLASROSENSTEIN_GAME_OF_LIFE */

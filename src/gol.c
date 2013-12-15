@@ -184,3 +184,48 @@ void game_of_life_draw_glider(
     game_of_life_cell_set(game, x        , y + 2 * v, 1);
 }
 
+void game_of_life_draw_lwss(
+        const game_of_life_t* game, int32_t x, int32_t y, char direction) {
+    static int w = 5;
+    static int h = 4;
+    static char pattern[] =
+            " XXXX"
+            "X   X"
+            "    X"
+            "X  X";
+
+    game_of_life_draw_block(game, x, y, w, h, false);
+
+    int i, j;
+    for (i=0; i < w; i++) {
+        for (j=0; j < h; j++) {
+            int pi = i;
+            int pj = j;
+            int gi = i;
+            int gj = j;
+            switch (direction) {
+                case 't':
+                case 'u':
+                    gi = j;
+                    gj = w - 1 - i;
+                    break;
+                case 'b':
+                case 'd':
+                    gi = j;
+                    gj = i;
+                    break;
+                case 'l':
+                    pi = w - 1 - i;
+                    break;
+                case 'r':
+                default:
+                    break;
+            }
+
+            char c = pattern[pi + pj * w];
+
+            if (c == 'X') game_of_life_cell_set(game, x + gi, y + gj, true);
+        }
+    }
+}
+

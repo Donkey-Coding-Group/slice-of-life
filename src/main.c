@@ -92,7 +92,7 @@ int main() {
         return -1;
     }
 
-    if (width < 20) width = 20;
+    if (width < 40) width = 40;
     if (height < 20) height = 20;
     height-=2;
 
@@ -104,11 +104,12 @@ int main() {
     }
 
     game_of_life_draw_glider(game, 10, 10, false, true);
+    game_of_life_draw_lwss(game, 30, 10, 'r');
 
     /* Create a printer. */
     gol_printer_t printer;
-    printer.color_alive = ANSICOLOR_GREEN;
-    printer.color_dead = ANSICOLOR_BLACK;
+    printer.color_alive = ANSICOLOR_BLUE;
+    printer.color_dead = ANSICOLOR_WHITE;
 
     int i;
     bool running = true;
