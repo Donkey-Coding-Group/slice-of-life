@@ -18,7 +18,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE. */
 
-#include <sys/ioctl.h>
 #include <unistd.h>
 
 #include <stdio.h>
@@ -29,21 +28,6 @@
 #include "gol.h"
 #include "ansi_escape.h"
 
-/* This function clears the terminal window completely. */
-void clear_console() {
-    fprintf(stdout, ANSIESCAPE_ERASE);
-}
-
-/* Returns the number of current columns and rows in the Terminal. */
-int get_terminal_size(uint16_t* columns, uint16_t* rows) {
-    struct winsize w;
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) { /* no error */
-        if (rows)    *rows = w.ws_row;
-        if (columns) *columns = w.ws_col;
-        return 0;
-    }
-    return 1;
-}
 
 /* Structure that holds information about printing a Game of Life to the
  * Terminal (yeay!) */
@@ -102,8 +86,8 @@ void gol_printer_print(const gol_printer_t* printer, const game_of_life_t* game)
 
 int main() {
     /* Retrieve the width and height of the Terminal. */
-    uint16_t width, height;
-    if (get_terminal_size(&width, &height) != 0) {
+    int width, height;
+    if (!ansiescape_winsize(&height, &width)) {
         fprintf(stderr, "Could not retrieve Terminal size.\n");
         return -1;
     }
