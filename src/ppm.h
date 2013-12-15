@@ -36,7 +36,7 @@
  * is the number of bytes that are supposed to be written. The function
  * returns the number of bytes that have actually been written to the
  * output stream. */
-typedef size_t (*ppm_write_method_t)(void*, const char*, size_t);
+typedef size_t (*ppm_writemethod_t)(void*, const char*, size_t);
 
 /* This structure contains callbacks for writing data to an output object.
  * It contains a callback that will be invoked with the data to write and
@@ -50,7 +50,7 @@ typedef struct _ppm_outstream {
     /* The callback that is able to write the char buffer to the
      * output *object*. Returns the number of bytes that have actually
      * been written. */
-    ppm_write_method_t write;
+    ppm_writemethod_t write;
 } ppm_outstream_t;
 
 /* Invoke the :attr:`ppm_outstream_t.write` callback. */
@@ -63,7 +63,7 @@ size_t ppm_outstream_printf(
 
 /* This is a pre-implemented callback for using the ppm_outstream_t with
  * ``FILE\*`` objects. */
-size_t ppm_write_method_file(void* fp, const char* buffer, size_t size);
+size_t ppm_writemethod_file(void* fp, const char* buffer, size_t size);
 
 /* Mode specifier. */
 typedef enum PPM_MODE {
@@ -71,9 +71,14 @@ typedef enum PPM_MODE {
     PPM_MODE_PLAIN,
 } PPM_MODE;
 
+/* Writes the header of a PPM file. */
+size_t ppm_write_header(
+        const ppm_outstream_t* outstream, PPM_MODE mode, uint16_t width,
+        uint16_t height, uint16_t maxvalue);
+
 /* Writes a pixel in the specified PPM mode to the outstream. */
 size_t ppm_write_pixel(
-        const ppm_outstream_t* outstream, PPM_MODE mode, int maxvalue,
-        int r, int g, int b);
+        const ppm_outstream_t* outstream, PPM_MODE mode, uint16_t maxvalue,
+        uint16_t r, uint16_t g, uint16_t b);
 
 #endif /* NIKLASROSENSTEIN_PPM */

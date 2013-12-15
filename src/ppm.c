@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <inttypes.h>
 #include "ppm.h"
 
 size_t ppm_outstream_write(
@@ -47,19 +48,49 @@ size_t ppm_outstream_printf(
     return result;
 }
 
-size_t ppm_write_method_file(void* fp_, const char* buffer, size_t size) {
+size_t ppm_writemethod_file(void* fp_, const char* buffer, size_t size) {
     FILE* fp = (FILE*) fp_;
     return fwrite(buffer, 1, size, fp);
 }
 
+size_t ppm_write_header(
+        const ppm_outstream_t* outstream, PPM_MODE mode, uint16_t width,
+        uint16_t height, uint16_t maxvalue) {
+    static const char* whm_format = "%"PRIu16" %"PRIu16"\n%"PRIu16"\n";
+
+    char buffer[100];
+    char* b = buffer;
+
+    /* Blit the magic number into the buffer. */
+    switch (mode) {
+        case PPM_MODE_PLAIN:
+            b += sprintf(buffer, "P3\n");
+            break;
+        case PPM_MODE_BINARY:
+            b += sprintf(buffer, "P6\n");
+            break;
+        default:
+            fprintf(stderr, "Invalid PPM_MODE supplied to ppm_write_header().");
+            return 0;
+    }
+
+    /* Blit the width, height and maxvalue into the buffer. */
+    b += sprintf(b, whm_format, width, height, maxvalue);
+
+    /* Write the buffer to the output stream. */
+    return ppm_outstream_write(outstream, buffer, (int) (b - buffer));
+}
+
 size_t ppm_write_pixel(
-        const ppm_outstream_t* outstream, PPM_MODE mode, int maxvalue,
-        int r, int g, int b) {
+        const ppm_outstream_t* outstream, PPM_MODE mode, uint16_t maxvalue,
+        uint16_t r, uint16_t g, uint16_t b) {
+    static const char* rgb_format = "%"PRIu16" %"PRIu16" %"PRIu16" ";
+
     int size = 0;
     char buffer[50];
     switch (mode) {
         case PPM_MODE_PLAIN:
-            size = snprintf(buffer, sizeof(buffer), "%d %d %d", r, g, b);
+            size = snprintf(buffer, sizeof(buffer), rgb_format, r, g, b);
             ppm_outstream_write(outstream, buffer, size);
             break;
         case PPM_MODE_BINARY:
@@ -84,5 +115,6 @@ size_t ppm_write_pixel(
     }
     return size;
 }
+
 
 
