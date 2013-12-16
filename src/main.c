@@ -145,8 +145,6 @@ bool gol_to_ppm(const struct gol_to_ppm_params params) {
 }
 
 
-
-
 int main() {
     /* Retrieve the width and height of the Terminal. */
     int width, height;
@@ -169,7 +167,7 @@ int main() {
     game_of_life_draw_glider(game, 51, -3, GOL_ROT_0, GOL_FLIP_H);
     game_of_life_draw_glidergun(game, 0, 0, GOL_ROT_0, GOL_FLIP_0);
 
-    ppm_pixel_buffer_t* buffer = ppm_pixel_buffer_create(width * 5, height * 5, 255);
+    ppm_pixel_buffer_t* buffer = ppm_pixel_buffer_create(width * 2, height * 2, 255);
     if (buffer == NULL) {
         fprintf(stderr, "PPM Pixel Buffer could not be allocated.\n");
         return -1;
@@ -179,7 +177,7 @@ int main() {
     ppm_pixel_t cdead = {0};
 
     struct gol_to_ppm_params params;
-    params.scale = 0.2;
+    params.scale = 0.5;
     params.xoff = params.yoff = 0;
     params.calive = calive;
     params.cdead = cdead;
@@ -219,12 +217,14 @@ int main() {
             fprintf(stderr, "gol_to_ppm() returned false!\n");
         }
 
+        /*
         ansiescape_clear();
         ansiescape_setcursor(0, 0);
         gol_printer_print(&printer, game);
         printf("%sGeneration: %llu\n", ANSIESCAPE_ERASE_LINE, game->generation);
+        */
         game_of_life_next_generation(game);
-        usleep(50 * 1000);
+        // usleep(50 * 1000);
     }
 
     game_of_life_destroy(game);
