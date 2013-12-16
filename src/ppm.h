@@ -30,18 +30,23 @@
 
 #include <stdlib.h>
 
+typedef struct _ppm_outstream ppm_outstream_t;
+
 /* This method type is used to write data to an object from a buffer. The
  * first parameter is the user-object as specified in the
  * :attr:`ppm_outstream_t.object` field. The scond is a buffer and the third
  * is the number of bytes that are supposed to be written. The function
  * returns the number of bytes that have actually been written to the
  * output stream. */
-typedef size_t (*ppm_writemethod_t)(void*, const char*, size_t);
+typedef size_t (*ppm_outstream_write_t)(const ppm_outstream_t*, const char*, size_t);
+
+/* Called when a PPM Outstream is being destroyed. */
+typedef void (*pmm_outstream_on_destroy_t)(ppm_outstream_t*);
 
 /* This structure contains callbacks for writing data to an output object.
  * It contains a callback that will be invoked with the data to write and
  * its user-data. */
-typedef struct _ppm_outstream {
+struct _ppm_outstream {
     /* The custom object that is capable to recieving data based on
      * char buffers. The :attr:`write` callback recieves this object
      * as its first parameter. */
@@ -50,20 +55,31 @@ typedef struct _ppm_outstream {
     /* The callback that is able to write the char buffer to the
      * output *object*. Returns the number of bytes that have actually
      * been written. */
-    ppm_writemethod_t write;
-} ppm_outstream_t;
+    ppm_outstream_write_t write;
+
+    /* This function is called when the stream is being destroyed. */
+    pmm_outstream_on_destroy_t destroy;
+};
+
+
+/* Create a ppm_outstream_t from a FILE object. */
+ppm_outstream_t* ppm_outstream_create_fromfile(FILE* fp);
+
+/* Create a PPM Outstream from a Filename. The file will be opened in
+ * binary mode. NULL is returned when the file could not be opened. */
+ppm_outstream_t* ppm_outstream_create_fromfilename(const char* filename);
+
+/* Destroy a ppm_outstream_t object allocated with one of the create
+ * functions. */
+void ppm_outstream_destroy(ppm_outstream_t* stream);
 
 /* Invoke the :attr:`ppm_outstream_t.write` callback. */
 size_t ppm_outstream_write(
-        const ppm_outstream_t* outstream, const char* buffer, size_t size);
+        const ppm_outstream_t* stream, const char* buffer, size_t size);
 
 /* Printf to a ppm output stream. */
 size_t ppm_outstream_printf(
-        const ppm_outstream_t* outstream, const char* format, ...);
-
-/* This is a pre-implemented callback for using the ppm_outstream_t with
- * ``FILE\*`` objects. */
-size_t ppm_writemethod_file(void* fp, const char* buffer, size_t size);
+        const ppm_outstream_t* stream, const char* format, ...);
 
 /* Mode specifier. */
 typedef enum PPM_MODE {
@@ -94,7 +110,7 @@ int ppm_writesession_init(
 /* Writes the header of a PPM file. */
 size_t ppm_write_header(ppm_writesession_t* session);
 
-/* Writes a pixel in the specified PPM mode to the outstream. */
+/* Writes a pixel in the specified PPM mode to the stream. */
 size_t ppm_write_pixel(
         ppm_writesession_t* session, uint16_t r, uint16_t g, uint16_t b);
 

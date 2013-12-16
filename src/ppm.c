@@ -28,13 +28,57 @@
 #include <inttypes.h>
 #include "ppm.h"
 
+
+/* Callbacks for FILE streams. */
+
+static size_t _ppm_outstream_fp_write(
+        const ppm_outstream_t* stream, const char* buffer, size_t size) {
+    FILE* fp = (FILE*) stream->object;
+    return fwrite(buffer, 1, size, fp);
+}
+
+static void _ppm_outstream_fp_destroy(ppm_outstream_t* stream) {
+    if (stream->object) {
+        fclose((FILE*) stream->object);
+        stream->object = NULL;
+    }
+}
+
+
+/* Stream creation. */
+
+ppm_outstream_t* ppm_outstream_create_fromfile(FILE* fp) {
+    if (fp == NULL) return NULL;
+    ppm_outstream_t* stream = malloc(sizeof(ppm_outstream_t));
+    if (stream == NULL) return NULL;
+    stream->object = fp;
+    stream->write = _ppm_outstream_fp_write;
+    stream->destroy = _ppm_outstream_fp_destroy;
+    return stream;
+}
+
+ppm_outstream_t* ppm_outstream_create_fromfilename(const char* filename) {
+    FILE* fp = fopen(filename, "wb");
+    return ppm_outstream_create_fromfile(fp);
+}
+
+void ppm_outstream_destroy(ppm_outstream_t* stream) {
+    if (stream->destroy) {
+        stream->destroy(stream);
+    }
+    free(stream);
+}
+
+
+/* Generic Stream interaction. */
+
 size_t ppm_outstream_write(
-        const ppm_outstream_t* outstream, const char* buffer, size_t size) {
-    return outstream->write(outstream->object, buffer, size);
+        const ppm_outstream_t* stream, const char* buffer, size_t size) {
+    return stream->write(stream, buffer, size);
 }
 
 size_t ppm_outstream_printf(
-        const ppm_outstream_t* outstream, const char* format, ...) {
+        const ppm_outstream_t* stream, const char* format, ...) {
     va_list args;
     va_start(args, format);
 
@@ -43,15 +87,13 @@ size_t ppm_outstream_printf(
     va_end(args);
     if (string == NULL) return 0;
 
-    size_t result = ppm_outstream_write(outstream, string, size);
+    size_t result = ppm_outstream_write(stream, string, size);
     free(string);
     return result;
 }
 
-size_t ppm_writemethod_file(void* fp_, const char* buffer, size_t size) {
-    FILE* fp = (FILE*) fp_;
-    return fwrite(buffer, 1, size, fp);
-}
+
+/* PPM Writing. */
 
 int ppm_writesession_init(
         ppm_writesession_t* session, const ppm_outstream_t* stream,

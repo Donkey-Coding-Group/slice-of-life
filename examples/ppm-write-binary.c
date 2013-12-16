@@ -23,23 +23,20 @@
 
 int main() {
     /* Create a PPM Output Stream to a file object. */
-    ppm_outstream_t stream;
-    stream.object = fopen("ppm-write-binary-result.ppm", "wb");
-    stream.write = ppm_writemethod_file;
-
-    /* Could the file be opened successfully? */
-    if (!stream.object) {
-        fprintf(stderr, "File could not be opened.\n");
+    ppm_outstream_t* stream = ppm_outstream_create_fromfilename(
+            "ppm-write-binary-result.ppm");
+    if (stream == NULL) {
+        fprintf(stderr, "File could not be opened or outstream not allocated\n.");
         return -1;
     }
 
     /* Create a PPM Write Session. */
     ppm_writesession_t session;
-    int r = ppm_writesession_init(&session, &stream, PPM_MODE_BINARY,
+    int r = ppm_writesession_init(&session, stream, PPM_MODE_BINARY,
                                   255, 255, 255); // width, height, maxvalue
     if (r != 0) {
         fprintf(stderr, "Write Session could not be initialized.\n");
-        fclose(stream.object);
+        ppm_outstream_destroy(stream);
         return -1;
     }
 
@@ -55,7 +52,7 @@ int main() {
     }
 
     /* Close the file stream again. */
-    fclose(stream.object);
+    ppm_outstream_destroy(stream);
     return 0;
 }
 
