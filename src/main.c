@@ -166,23 +166,7 @@ int main() {
 
     game_of_life_draw_glider(game, 51, -3, GOL_ROT_0, GOL_FLIP_H);
     game_of_life_draw_glidergun(game, 0, 0, GOL_ROT_0, GOL_FLIP_0);
-
-    ppm_pixel_buffer_t* buffer = ppm_pixel_buffer_create(width * 2, height * 2, 255);
-    if (buffer == NULL) {
-        fprintf(stderr, "PPM Pixel Buffer could not be allocated.\n");
-        return -1;
-    }
-
-    ppm_pixel_t calive = {255};
-    ppm_pixel_t cdead = {0};
-
-    struct gol_to_ppm_params params;
-    params.scale = 0.5;
-    params.xoff = params.yoff = 0;
-    params.calive = calive;
-    params.cdead = cdead;
-    params.game = game;
-    params.buffer = buffer;
+    game_of_life_draw_lwss(game, 20, 20, GOL_ROT_0, GOL_FLIP_0);
 
     /* Create a printer. */
     gol_printer_t printer;
@@ -194,37 +178,14 @@ int main() {
     while (running) {
         ansiescape_winsize(&height, &width);
         if (height > 2) height -= 2;
-
         printer.max_width = width;
 
-        if (game->generation > 100) break;
-
-        /* Write the state of the Game into the PPM Pixel Buffer. */
-        if (gol_to_ppm(params)) {
-            char filename[40];
-            sprintf(filename, "out/gol-%04llu.ppm", game->generation);
-            FILE* fp = fopen(filename, "wb");
-            if (fp == NULL) {
-                fprintf(stderr, "could not open file %s\n", filename);
-            }
-
-            if (ppm_write_pixel_buffer_to_file(buffer, PPM_MODE_BINARY, fp) != 0) {
-                fprintf(stderr, "ppm_write_pixel_buffer_to_file() returned non-zero.\n");
-            }
-            fclose(fp);
-        }
-        else {
-            fprintf(stderr, "gol_to_ppm() returned false!\n");
-        }
-
-        /*
         ansiescape_clear();
         ansiescape_setcursor(0, 0);
         gol_printer_print(&printer, game);
-        printf("%sGeneration: %llu\n", ANSIESCAPE_ERASE_LINE, game->generation);
-        */
         game_of_life_next_generation(game);
-        // usleep(50 * 1000);
+        printf("%sGeneration: %llu\n", ANSIESCAPE_ERASE_LINE, game->generation);
+        usleep(50 * 1000);
     }
 
     game_of_life_destroy(game);
