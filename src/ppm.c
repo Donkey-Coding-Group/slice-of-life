@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdbool.h>
 #include <inttypes.h>
 #include "ppm.h"
 
@@ -126,6 +127,7 @@ int ppm_write_init(
     session->line = 0;
     session->column = 0;
 
+    session->characters_in_line = 0;
     /* Count the number if places each digit requires. */
     switch (mode) {
         case PPM_MODE_BINARY:
@@ -139,6 +141,7 @@ int ppm_write_init(
                     session->pixelwidth - 1, PRIu16,
                     session->pixelwidth - 1, PRIu16,
                     session->pixelwidth - 1, PRIu16);
+            session->pixelwidth *= 3;
             break;
     }
     return 0;
@@ -179,13 +182,15 @@ size_t ppm_write_pixel(
     if (g > session->maxvalue) g = session->maxvalue;
     if (b > session->maxvalue) b = session->maxvalue;
 
-    /* printf() format string for the r, g, b values used in plain mode. */
+    /* The characters that will be used to separate the pixels from each
+     * other. Either a space or a newline. */
     char c = ' ';
     int size = 0;
     char buffer[50];
 
-    if (session->column >= session->width) {
-        c = '\n';
+    /* Check if we should do a line-break instead of simple whitespace. */
+    bool do_linebreak = false;
+    if ( session->column >= session->width) {
         session->line++;
         session->column = 0;
     }
@@ -193,6 +198,14 @@ size_t ppm_write_pixel(
         session->column++;
     }
     session->pixelcount++;
+
+    if ((session->characters_in_line + session->pixelwidth) > 70) {
+        do_linebreak = true;
+        session->characters_in_line = 0;
+    }
+    if (do_linebreak) {
+        c = '\n';
+    }
 
     /* Pack the r, g, b values into the buffer depending on the PPM mode. */
     switch (session->mode) {
@@ -223,6 +236,7 @@ size_t ppm_write_pixel(
     }
 
     ppm_outstream_write(session->stream, buffer, size);
+    session->characters_in_line += size;
     return size;
 }
 
