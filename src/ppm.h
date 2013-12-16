@@ -101,6 +101,9 @@ typedef struct _ppm_writesession {
     uint16_t pixelcount;
     uint16_t line;
     uint16_t column;
+
+    char pixelwidth;
+    char pixelformat[40];
 } ppm_writesession_t;
 
 

@@ -29,6 +29,16 @@
 #include "ppm.h"
 
 
+char _count_decimal_places(int64_t value) {
+    char count = 1;
+    while (value > 9) {
+        value /= 10;
+        count++;
+    }
+    return count;
+}
+
+
 /* Callbacks for FILE streams. */
 
 static size_t _ppm_outstream_fp_write(
@@ -101,6 +111,11 @@ int ppm_write_init(
     if (!session || !stream) return 1;
     if (width <= 0 || height <= 0 || maxvalue <= 0) return 2;
 
+    /* The P6 (plain) format can only be used with single-byte colours. */
+    if (maxvalue > 255 && mode == PPM_MODE_PLAIN) {
+        return 3;
+    }
+
     session->stream = stream;
     session->mode = mode;
     session->width = width;
@@ -111,6 +126,21 @@ int ppm_write_init(
     session->line = 0;
     session->column = 0;
 
+    /* Count the number if places each digit requires. */
+    switch (mode) {
+        case PPM_MODE_BINARY:
+            session->pixelwidth = (maxvalue < 256 ? 1 : 2);
+            session->pixelformat[0] = 0;
+            break;
+        case PPM_MODE_PLAIN:
+            session->pixelwidth = _count_decimal_places(maxvalue) + 1;
+            snprintf(session->pixelformat, sizeof(session->pixelformat),
+                    "%%%d%s %%%d%s %%%d%s",
+                    session->pixelwidth - 1, PRIu16,
+                    session->pixelwidth - 1, PRIu16,
+                    session->pixelwidth - 1, PRIu16);
+            break;
+    }
     return 0;
 }
 
@@ -144,9 +174,12 @@ size_t ppm_write_header(ppm_writesession_t* session) {
 
 size_t ppm_write_pixel(
         ppm_writesession_t* session, uint16_t r, uint16_t g, uint16_t b) {
-    /* printf() format string for the r, g, b values used in plain mode. */
-    static const char* rgb_format = "%"PRIu16" %"PRIu16" %"PRIu16" %c";
+    /* Limit the r, g, b values. */
+    if (r > session->maxvalue) r = session->maxvalue;
+    if (g > session->maxvalue) g = session->maxvalue;
+    if (b > session->maxvalue) b = session->maxvalue;
 
+    /* printf() format string for the r, g, b values used in plain mode. */
     char c = ' ';
     int size = 0;
     char buffer[50];
@@ -164,7 +197,10 @@ size_t ppm_write_pixel(
     /* Pack the r, g, b values into the buffer depending on the PPM mode. */
     switch (session->mode) {
         case PPM_MODE_PLAIN:
-            size = snprintf(buffer, sizeof(buffer), rgb_format, r, g, b, c);
+            size = snprintf(buffer, sizeof(buffer), session->pixelformat,
+                    r, g, b);
+            buffer[size++] = c;
+            buffer[size] = 0;
             break;
         case PPM_MODE_BINARY:
             if (session->maxvalue < 256) size = 1;
@@ -190,6 +226,8 @@ size_t ppm_write_pixel(
     return size;
 }
 
+
+/* PPM Pixel Buffer. */
 
 ppm_pixel_buffer_t* ppm_pixel_buffer_create(
         uint16_t width, uint16_t height, uint16_t maxvalue) {
