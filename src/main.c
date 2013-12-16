@@ -26,6 +26,7 @@
 #include <stdbool.h>
 
 #include "gol.h"
+#include "ppm.h"
 #include "ansiescape.h"
 
 
@@ -84,6 +85,68 @@ void gol_printer_print(const gol_printer_t* printer, const game_of_life_t* game)
 }
 
 
+/* Structure that contains parameters for writing a Game of Life into a
+ * PPM Image Buffer. */
+struct gol_to_ppm_params {
+    /* A floating point number representing the scale of the game
+     * mapped on to the image buffer. Note that no anti-aliasing is
+     * performed. */
+    float scale;
+
+    /* X and Y offset of the Game of Life in the PPM Image Buffer. */
+    uint16_t xoff, yoff;
+
+    /* The color of an alive cell. */
+    ppm_pixel_t calive;
+
+    /* The color of a dead cell. */
+    ppm_pixel_t cdead;
+
+    /* The Game of Life to write. */
+    const game_of_life_t* game;
+
+    /* The PPM Image Buffer to fill. */
+    const ppm_pixel_buffer_t* buffer;
+};
+
+bool gol_to_ppm(const struct gol_to_ppm_params params) {
+    if (params.scale <= 0.0001) {
+        return false;
+    }
+    if (params.game == NULL || params.buffer == NULL) {
+        return false;
+    }
+
+    int i, j, x, y;
+    for (j=0; j < params.buffer->height; j++) {
+        y = params.yoff + ((float) j * params.scale);
+        if (y >= params.game->height) break;
+
+        for (i=0; i < params.buffer->width; i++) {
+            x = params.xoff + ((float) i * params.scale);
+            if (x >= params.game->width) break;
+
+            const cell_t* cell = game_of_life_cell(params.game, x, y);
+            ppm_pixel_t* pixel = ppm_pixel_buffer_get(params.buffer, i, j);
+
+            if (cell == NULL || pixel == NULL) {
+                fprintf(stderr, "gol_to_ppm() at (%u, %u) -> (%u, %u) got "
+                                "cell:0x%x, pixel:0x%x\n", i, j, x, y,
+                                (unsigned) cell, (unsigned) pixel);
+                break;
+            }
+
+            if (cell->state) *pixel = params.calive;
+            else *pixel = params.cdead;
+        }
+    }
+
+    return true;
+}
+
+
+
+
 int main() {
     /* Retrieve the width and height of the Terminal. */
     int width, height;
@@ -106,10 +169,27 @@ int main() {
     game_of_life_draw_glider(game, 51, -3, GOL_ROT_0, GOL_FLIP_H);
     game_of_life_draw_glidergun(game, 0, 0, GOL_ROT_0, GOL_FLIP_0);
 
+    ppm_pixel_buffer_t* buffer = ppm_pixel_buffer_create(width * 5, height * 5, 255);
+    if (buffer == NULL) {
+        fprintf(stderr, "PPM Pixel Buffer could not be allocated.\n");
+        return -1;
+    }
+
+    ppm_pixel_t calive = {255};
+    ppm_pixel_t cdead = {0};
+
+    struct gol_to_ppm_params params;
+    params.scale = 0.2;
+    params.xoff = params.yoff = 0;
+    params.calive = calive;
+    params.cdead = cdead;
+    params.game = game;
+    params.buffer = buffer;
+
     /* Create a printer. */
     gol_printer_t printer;
-    printer.color_alive = ANSICOLOR_BLUE;
-    printer.color_dead = ANSICOLOR_WHITE;
+    printer.color_alive = ANSICOLOR_YELLOW;
+    printer.color_dead = ANSICOLOR_BLACK;
 
     int i;
     bool running = true;
@@ -118,6 +198,26 @@ int main() {
         if (height > 2) height -= 2;
 
         printer.max_width = width;
+
+        if (game->generation > 100) break;
+
+        /* Write the state of the Game into the PPM Pixel Buffer. */
+        if (gol_to_ppm(params)) {
+            char filename[40];
+            sprintf(filename, "out/gol-%04llu.ppm", game->generation);
+            FILE* fp = fopen(filename, "wb");
+            if (fp == NULL) {
+                fprintf(stderr, "could not open file %s\n", filename);
+            }
+
+            if (ppm_write_pixel_buffer_to_file(buffer, PPM_MODE_BINARY, fp) != 0) {
+                fprintf(stderr, "ppm_write_pixel_buffer_to_file() returned non-zero.\n");
+            }
+            fclose(fp);
+        }
+        else {
+            fprintf(stderr, "gol_to_ppm() returned false!\n");
+        }
 
         ansiescape_clear();
         ansiescape_setcursor(0, 0);
