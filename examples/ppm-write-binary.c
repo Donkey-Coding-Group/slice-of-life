@@ -32,8 +32,7 @@ int main() {
 
     /* Create a PPM Write Session. */
     ppm_writesession_t session;
-    int r = ppm_writesession_init(&session, stream, PPM_MODE_BINARY,
-                                  255, 255, 255); // width, height, maxvalue
+    int r = ppm_write_init(&session, stream, PPM_MODE_BINARY, 255, 255, 255);
     if (r != 0) {
         fprintf(stderr, "Write Session could not be initialized.\n");
         ppm_outstream_destroy(stream);

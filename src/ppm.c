@@ -95,7 +95,7 @@ size_t ppm_outstream_printf(
 
 /* PPM Writing. */
 
-int ppm_writesession_init(
+int ppm_write_init(
         ppm_writesession_t* session, const ppm_outstream_t* stream,
         PPM_MODE mode, uint16_t width, uint16_t height, uint16_t maxvalue) {
     if (!session || !stream) return 1;

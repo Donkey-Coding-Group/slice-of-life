@@ -81,6 +81,7 @@ size_t ppm_outstream_write(
 size_t ppm_outstream_printf(
         const ppm_outstream_t* stream, const char* format, ...);
 
+
 /* Mode specifier. */
 typedef enum PPM_MODE {
     PPM_MODE_BINARY,
@@ -103,7 +104,7 @@ typedef struct _ppm_writesession {
 
 /* Initialize a :class:`ppm_write_session_t` object. Returns a non-zero
  * value on failure. The width, height and maxvalue must not be zero. */
-int ppm_writesession_init(
+int ppm_write_init(
         ppm_writesession_t* session, const ppm_outstream_t* stream,
         PPM_MODE mode, uint16_t width, uint16_t height, uint16_t maxvalue);
 
