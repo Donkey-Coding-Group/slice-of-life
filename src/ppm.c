@@ -191,4 +191,80 @@ size_t ppm_write_pixel(
 }
 
 
+ppm_pixel_buffer_t* ppm_pixel_buffer_create(
+        uint16_t width, uint16_t height, uint16_t maxvalue) {
+    /* Validate the parameters. */
+    if (width < 1 || height < 1 || maxvalue < 1) return NULL;
+
+    /* Allocate a Pixel array. */
+    ppm_pixel_t* pixels = malloc(sizeof(ppm_pixel_t) * width * height);
+    if (pixels == NULL) return NULL;
+
+    ppm_pixel_buffer_t* buffer = malloc(sizeof(ppm_pixel_buffer_t));
+    if (buffer == NULL) {
+        free(pixels);
+        return NULL;
+    }
+
+    buffer->pixels = pixels;
+    buffer->width = width;
+    buffer->height = height;
+    buffer->maxvalue = maxvalue;
+    return buffer;
+}
+
+void ppm_pixel_buffer_destroy(ppm_pixel_buffer_t* buffer) {
+    if (buffer->pixels) {
+        free(buffer->pixels);
+        buffer->pixels = NULL;
+    }
+    free(buffer);
+}
+
+ppm_pixel_t* ppm_pixel_buffer_get(
+        const ppm_pixel_buffer_t* buffer, uint16_t x, uint16_t y) {
+    if (x >= buffer->width || y >= buffer->height) return NULL;
+    return &buffer->pixels[x + y * buffer->width];
+}
+
+int ppm_write_pixel_buffer(
+        const ppm_pixel_buffer_t* buffer, const ppm_outstream_t* stream,
+        PPM_MODE mode) {
+    /* Create the PPM Write Session. */
+    ppm_writesession_t session;
+    if (ppm_write_init(&session, stream, mode, buffer->width, buffer->height,
+                       buffer->maxvalue) != 0) {
+        return 1;
+    }
+
+    /* Write header and the pixels. */
+    ppm_write_header(&session);
+    int i, j;
+    for (j=0; j < buffer->height; j++) {
+        for (i=0; i < buffer->width; i++) {
+            const ppm_pixel_t* p = ppm_pixel_buffer_get(buffer, i, j);
+            ppm_write_pixel(&session, p->r, p->g, p->b);
+        }
+    }
+
+    return 0;
+}
+
+int ppm_write_pixel_buffer_to_file(
+        const ppm_pixel_buffer_t* buffer, PPM_MODE mode, FILE* fp) {
+    ppm_outstream_t* stream = ppm_outstream_create_fromfile(fp);
+    if (stream == NULL) {
+        return 1;
+    }
+
+    int result = ppm_write_pixel_buffer(buffer, stream, mode);
+    ppm_outstream_destroy(stream);
+
+    if (result != 0) {
+        return 2;
+    }
+    return 0;
+}
+
+
 

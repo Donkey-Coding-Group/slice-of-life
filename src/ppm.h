@@ -30,6 +30,7 @@
 
 #include <stdlib.h>
 
+
 typedef struct _ppm_outstream ppm_outstream_t;
 
 /* This method type is used to write data to an object from a buffer. The
@@ -82,7 +83,7 @@ size_t ppm_outstream_printf(
         const ppm_outstream_t* stream, const char* format, ...);
 
 
-/* Mode specifier. */
+/* Mode specifier, plain or binary. */
 typedef enum PPM_MODE {
     PPM_MODE_BINARY,
     PPM_MODE_PLAIN,
@@ -102,6 +103,7 @@ typedef struct _ppm_writesession {
     uint16_t column;
 } ppm_writesession_t;
 
+
 /* Initialize a :class:`ppm_write_session_t` object. Returns a non-zero
  * value on failure. The width, height and maxvalue must not be zero. */
 int ppm_write_init(
@@ -114,5 +116,40 @@ size_t ppm_write_header(ppm_writesession_t* session);
 /* Writes a pixel in the specified PPM mode to the stream. */
 size_t ppm_write_pixel(
         ppm_writesession_t* session, uint16_t r, uint16_t g, uint16_t b);
+
+
+/* This structure represents an R G B pixel of a PPM Image. */
+typedef struct _ppm_pixel {
+    uint16_t r, g, b;
+} ppm_pixel_t;
+
+/* A PPM Pixel buffer. */
+typedef struct _ppm_pixel_buffer {
+    ppm_pixel_t* pixels;
+    uint16_t width;
+    uint16_t height;
+    uint16_t maxvalue;
+} ppm_pixel_buffer_t;
+
+/* Create a PPM Pixel Buffer from the specified parameters. */
+ppm_pixel_buffer_t* ppm_pixel_buffer_create(
+        uint16_t width, uint16_t height, uint16_t maxvalue);
+
+/* Destroys a PPM Pixel Buffer allocated with ppm_pixel_buffer_create(). */
+void ppm_pixel_buffer_destroy(ppm_pixel_buffer_t* buffer);
+
+/* Get a pixel from the PPM Pixel Buffer, or NULL if the indecies are
+ * out of range. */
+ppm_pixel_t* ppm_pixel_buffer_get(
+        const ppm_pixel_buffer_t* buffer, uint16_t x, uint16_t y);
+
+/* Writes a PPM Image to the specified outstream. */
+int ppm_write_pixel_buffer(
+        const ppm_pixel_buffer_t* buffer, const ppm_outstream_t* stream,
+        PPM_MODE mode);
+
+/* Writes a PPM Image to the specified file. */
+int ppm_write_pixel_buffer_to_file(
+        const ppm_pixel_buffer_t* buffer, PPM_MODE mode, FILE* fp);
 
 #endif /* NIKLASROSENSTEIN_PPM */
