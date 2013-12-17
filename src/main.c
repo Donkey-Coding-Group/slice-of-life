@@ -18,12 +18,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE. */
 
-#include <unistd.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+
+#include <unistd.h>
 
 #include "gol.h"
 #include "ppm.h"
@@ -146,6 +146,8 @@ bool gol_to_ppm(const struct gol_to_ppm_params params) {
 
 
 int main() {
+    int i;
+
     /* Retrieve the width and height of the Terminal. */
     int width, height;
     if (!ansiescape_winsize(&height, &width)) {
@@ -164,16 +166,25 @@ int main() {
         return -1;
     }
 
-    game_of_life_draw_glider(game, 51, -3, GOL_ROT_0, GOL_FLIP_H);
-    game_of_life_draw_glidergun(game, 0, 0, GOL_ROT_0, GOL_FLIP_0);
-    game_of_life_draw_lwss(game, 20, 20, GOL_ROT_0, GOL_FLIP_0);
+    static const char pattern[] =
+        "  XXX"
+        " X  X"
+        "X   X"
+        "X    "
+        "X   X"
+        " X  X"
+        "  XXX";
+
+    for (i=0; i < width / 25 - 1; i++) {
+        game_of_life_draw_pattern(game, pattern, 20 + i * 25, 10 + i, 5, 7, GOL_ROT_0, GOL_FLIP_0, true);
+    }
+    // game_of_life_draw_glidergun(game, 0, 0, GOL_ROT_0, GOL_FLIP_0);
 
     /* Create a printer. */
     gol_printer_t printer;
     printer.color_alive = ANSICOLOR_YELLOW;
     printer.color_dead = ANSICOLOR_BLACK;
 
-    int i;
     bool running = true;
     while (running) {
         ansiescape_winsize(&height, &width);
