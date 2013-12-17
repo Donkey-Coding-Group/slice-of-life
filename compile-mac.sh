@@ -9,4 +9,4 @@ if [ "$DEBUG" = "yes" ]; then
     FLAGS="$FLAGS -g"
 fi
 
-$CC src/*.c $FLAGS -o main.out
+$CC src/*.c $FLAGS -framework Cocoa -framework GLUT -framework OpenGL -o main.out
