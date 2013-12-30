@@ -24,6 +24,8 @@
 #include <stdbool.h>
 
 #include <unistd.h>
+// #include <GLUT/glut.h>
+// #include <GL/glfw.h>
 
 #include "gol.h"
 #include "ppm.h"
