@@ -36,7 +36,8 @@ flags = cc.warnAll
     include = {localpath "src/"}
     linkWith=
     temp    = {localpath {join "src/" {suffix filename "o"}}}
-    target  = {localpath {join "build/" {pl.libname {suffix filename ""}}}}
+    targetName = {pl.libname filename}
+    target  = {localpath {join "build/" targetName}}
     flags   =
 
     doArchive = "true"
@@ -45,14 +46,20 @@ flags = cc.warnAll
 
         newFlags = ...flags flags {zip cc.I include}
 
-        $ pl.mkdir {dirname temp target}
-
         ::if doArchive
-            $ cc newFlags cc.compileOnly sources cc.o temp
-            $ ar ar.objectLib target temp
-            $ pl.remove temp
+            ::if {update sources temp}
+                $ pl.mkdir {dirname temp target}
+                $ cc newFlags cc.compileOnly sources cc.o temp
+            ::if {update temp target}
+                $ ar ar.objectLib target temp
         ::else
-            $ cc newFlags sources linkWith cc.o target
+            ::if {update sources target}
+                $ pl.mkdir {dirname temp target}
+                $ cc newFlags sources linkWith cc.o target
+
+    @clean
+
+        $ pl.remove temp
 
 @ansiescape : basemodule
 
@@ -69,6 +76,7 @@ flags = cc.warnAll
 @main : basemodule < ansiescape gol ppm
 
     filename = "main.c"
+    targetName = {pl.exename "main"}
     linkWith = ansiescape.target gol.target ppm.target
     doArchive = "false"
 
