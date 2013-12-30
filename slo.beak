@@ -59,7 +59,10 @@ flags = cc.warnAll
 
     @clean
 
-        $ pl.remove temp
+        ::if doArchive
+            $ pl.remove temp
+        ::else
+            $ pl.remove target
 
 @ansiescape : basemodule
 
@@ -82,5 +85,6 @@ flags = cc.warnAll
 
 @test < main
 
-    $ main.target
+    @perform
+        $ main.target
 
