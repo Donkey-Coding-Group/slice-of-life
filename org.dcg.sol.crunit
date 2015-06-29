@@ -1,0 +1,26 @@
+# Copyright (C) 2015 Donkey Coding Group
+
+import creator
+if creator.__version__ < '0.0.2':
+	raise EnvironmentError('require Creator v0.0.2 at least')
+
+load('compiler', 'c')
+load('platform', 'p')
+
+define('Sources', '$*($ProjectPath/src/*.c)')
+define('Objects', '$(p:obj $(move $Sources,$ProjectPath/src/,$ProjectPath/build/obj))')
+define('Program', '$(p:bin $ProjectPath/build/slice-of-life)')
+define('CFlags',  '$c:wall $c:compileonly')
+
+if defined('Debug'):
+	define('CFlags', '$CFlags $c:g')
+
+@target
+def objects():
+	for fin, fout in foreach_split('$Sources', '$Objects'):
+		objects.add('$fin', '$fout', '$c:cc $CFlags "$<" $(c:objout $@)')
+
+@target
+def program():
+	program.requires(objects)
+	program.add('$Objects', '$Program', '$c:cc $"{$<} $(c:binout $@)')
