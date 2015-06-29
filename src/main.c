@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <inttypes.h>
 
 #include <unistd.h>
 // #include <GLUT/glut.h>
@@ -133,8 +134,8 @@ bool gol_to_ppm(const struct gol_to_ppm_params params) {
 
             if (cell == NULL || pixel == NULL) {
                 fprintf(stderr, "gol_to_ppm() at (%u, %u) -> (%u, %u) got "
-                                "cell:0x%x, pixel:0x%x\n", i, j, x, y,
-                                (unsigned) cell, (unsigned) pixel);
+                                "cell:0x%zx, pixel:0x%zx\n", i, j, x, y,
+                                (size_t) cell, (size_t) pixel);
                 break;
             }
 
@@ -197,7 +198,7 @@ int main() {
         ansiescape_setcursor(0, 0);
         gol_printer_print(&printer, game);
         game_of_life_next_generation(game);
-        printf("%sGeneration: %llu\n", ANSIESCAPE_ERASE_LINE, game->generation);
+        printf("%sGeneration: %"PRId64"\n", ANSIESCAPE_ERASE_LINE, game->generation);
         usleep(50 * 1000);
     }
 
