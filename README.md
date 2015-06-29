@@ -1,7 +1,5 @@
-slice-of-life
-=============
-
-Game of Life in the Terminal (Unix only currently)
+A Slice of Life
+===============
 
 __Compile, Run & Watch__
 
