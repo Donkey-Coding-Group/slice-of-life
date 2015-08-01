@@ -3,7 +3,7 @@ A Slice of Life
 
 __Compile, Run & Watch__
 
-    $ creator ninja -f && ninja
+    $ creator
     $ build/slice-of-life
 
 ![Screenshot of the Simulation](readme/simulation.png)
