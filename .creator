@@ -1,8 +1,9 @@
+# @creator.unit.name = org.dcg.slice-of-life
 # Copyright (C) 2015 Donkey Coding Group
 
 import creator
-if creator.__version__ < '0.0.3':
-	raise EnvironmentError('require Creator v0.0.3 at least')
+if creator.__version__ < '0.0.4':
+	raise EnvironmentError('require Creator v0.0.4 at least')
 
 load('compiler', 'c')
 load('platform', 'p')
@@ -15,12 +16,15 @@ define('CFlags',  '$c:wall $c:compileonly')
 if defined('Debug'):
 	define('CFlags', '$CFlags $c:g')
 
-@target
+@target()
 def objects():
 	objects.build_each('$Sources', '$Objects',
 		'$c:cc $CFlags $"< $(c:objout $@)')
 
-@target
+@target(objects)
 def program():
-	program.requires(objects)
 	program.add('$Objects', '$Program', '$c:cc $!< $(c:binout $@)')
+
+@task(program)
+def run():
+	shell('$"Program')
