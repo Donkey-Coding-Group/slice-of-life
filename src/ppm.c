@@ -22,11 +22,13 @@
  * description: Simple PPM writer.
  * author: Niklas Rosenstein <rosensteinniklas@gmail.com> */
 
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
 #include <stdbool.h>
 #include <inttypes.h>
+#include <arpa/inet.h>  // htonl
 #include "ppm.h"
 
 
