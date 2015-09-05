@@ -3,7 +3,7 @@ A Slice of Life
 
 __Compile, Run & Watch__
 
-    $ creator
+    $ craftr export && ninja
     $ build/slice-of-life
 
 ![Screenshot of the Simulation](readme/simulation.png)
@@ -12,5 +12,5 @@ __Compile, Run & Watch__
 
 __Requirements__
 
-- [Creator](https://github.com/creator-build/creator)
+- [Craftr](https://github.com/craftr-build/craftr)
 - C99

@@ -1,0 +1,32 @@
+# craftr_module(donkey_coding_group.slice_of_life)
+# Copyright (C) 2015 Donkey Coding Group
+
+setdefault('debug', False)
+
+P = load_module('platform')
+C = load_module('compiler')
+
+build_dir = join(project_dir, 'build')
+sources = glob(join(project_dir, 'src', '*.c'))
+objects = move(sources, project_dir, join(build_dir, 'obj'), P.obj)
+program = P.bin(join(build_dir, 'sol-main'))
+cflags = [C.w_all]
+if debug:
+  cflags += [C.g]
+
+target(
+  'Objects',
+  inputs=sources,
+  outputs=objects,
+  command=[C.c, C.compile_only, cflags, '%%in', C.obj_out('%%out')],
+  foreach=True,
+  description='Building Object %%in',
+)
+
+target(
+  'Program',
+  inputs=Objects.outputs,
+  outputs=program,
+  command=[C.c, cflags, '%%in', C.bin_out('%%out')],
+  description='Building Executable %%in',
+)
