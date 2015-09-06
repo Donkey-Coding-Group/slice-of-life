@@ -4,7 +4,7 @@ A Slice of Life
 __Compile, Run & Watch__
 
     $ craftr export && ninja
-    $ build/slice-of-life
+    $ build/sol-main
 
 ![Screenshot of the Simulation](readme/simulation.png)
 
